@@ -1,18 +1,7 @@
 # Copyright (C) 2024 The Android Open Source Project
-# Copyright (C) 2024 TeamWin Recovery Project
 # Copyright (C) 2024 SebaUbuntu's TWRP device tree generator
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 #
 
 LOCAL_PATH := device/tecno/LH8n
@@ -20,28 +9,15 @@ LOCAL_PATH := device/tecno/LH8n
 # Dynamic Partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
-# API
-PRODUCT_SHIPPING_API_LEVEL := 32
-PRODUCT_TARGET_VNDK_VERSION := 31
-BOARD_SYSTEMSDK_VERSIONS := 32
-
-# Virtual A/B OTA
-AB_OTA_UPDATER := true
+# Virtual A/B
+ENABLE_VIRTUAL_AB := true
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
-ENABLE_VIRTUAL_AB := true
-AB_OTA_PARTITIONS += \
-    boot \
-    dtbo \
-    lk \
-    odm \
-    odm_dlkm \
-    product \
-    system \
-    system_ext \
-    vbmeta_system \
-    vbmeta_vendor \
-    vendor
+# Update Engine & Update Verifier 
+PRODUCT_PACKAGES += \
+    update_engine \
+    update_verifier \
+    update_engine_sideload
 
 # A/B
 AB_OTA_POSTINSTALL_CONFIG += \
@@ -50,32 +26,45 @@ AB_OTA_POSTINSTALL_CONFIG += \
     FILESYSTEM_TYPE_system=ext4 \
     POSTINSTALL_OPTIONAL_system=true
 
-# Fastbootd
+# A/B 
 PRODUCT_PACKAGES += \
-    android.hardware.fastboot@1.0-impl-mock \
-    fastbootd
+    otapreopt_script \
+    cppreopts.sh
 
 # Boot control HAL
 PRODUCT_PACKAGES += \
-    android.hardware.boot@1.2-mtkimpl \
-    android.hardware.boot@1.2-mtkimpl.recovery
+    android.hardware.boot@1.2-impl \
+    android.hardware.boot@1.2-impl.recovery \
+    android.hardware.boot@1.2-service
 
-# Health Hal
+PRODUCT_PACKAGES_DEBUG += \
+    bootctrl 
+
+PRODUCT_PACKAGES += \
+    bootctrl.mt6833 \
+    bootctrl.mt6833.recovery
+
+# Soong
+PRODUCT_SOONG_NAMESPACES += \
+    $(LOCAL_PATH)
+
+# Fastbootd
+PRODUCT_PACKAGES += \
+    android.hardware.fastboot@1.1-impl-mock \
+    fastbootd
+
+# Health HAL
 PRODUCT_PACKAGES += \
     android.hardware.health@2.1-impl \
-    android.hardware.health@2.1-service       
+    android.hardware.health@2.1-service
 
-PRODUCT_PACKAGES += \
-    otapreopt_script \
-    cppreopts.sh \
+# Additional Libraries
+TARGET_RECOVERY_DEVICE_MODULES += \
+    libkeymaster4 \
+    libkeymaster41 \
+    libpuresoftkeymasterdevice
 
-# Update engine 
-PRODUCT_PACKAGES += \
-    update_engine \
-    update_verifier \
-    update_engine_sideload
-
-# MTK plpath utils
-PRODUCT_PACKAGES += \
-    mtk_plpath_utils \
-    mtk_plpath_utils.recovery
+RECOVERY_LIBRARY_SOURCE_FILES += \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster4.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster41.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so
