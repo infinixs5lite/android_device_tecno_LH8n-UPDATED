@@ -19,10 +19,10 @@
 $(call inherit-product, $(SRC_TARGET_DIR)/product/base.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 
-# Inherit some common Omni stuff.
+# Inherit some twrp stuff.
 $(call inherit-product, vendor/twrp/config/common.mk)
 
-# Inherit from TECNO-LH8n device
+# Inherit from LH8n device
 $(call inherit-product, device/tecno/LH8n/device.mk)
 
 # Installs gsi keys into ramdisk, to boot a developer GSI with verified boot.
